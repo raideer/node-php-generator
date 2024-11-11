@@ -4,7 +4,7 @@ import { Constructor } from "@/types";
 export function asFunction<T extends Constructor<{}>>(target: T) {
   return class extends target {
     public body: string = "";
-    public parameters: Parameter[] = [];
+    public parameters: Record<string, Parameter> = {};
     public variadic = false;
     public returnType: string | undefined;
     public returnReference = false;
@@ -27,13 +27,17 @@ export function asFunction<T extends Constructor<{}>>(target: T) {
     }
 
     setParameters(parameters: Parameter[]): this {
-      this.parameters = parameters;
+      this.parameters = parameters.reduce((acc, parameter) => {
+        acc[parameter.getName()!] = parameter;
+
+        return acc;
+      }, {} as Record<string, Parameter>);
 
       return this;
     }
 
     getParameters(): Parameter[] {
-      return this.parameters;
+      return Object.values(this.parameters);
     }
 
     addParameter(name: string, defaultValue: string | null = null): Parameter {
@@ -43,8 +47,8 @@ export function asFunction<T extends Constructor<{}>>(target: T) {
         parameter.setDefaultValue(defaultValue);
       }
 
-      this.parameters.push(parameter);
-
+      this.parameters[name] = parameter;
+      
       return parameter;
     }
 
