@@ -39,7 +39,10 @@ export class FunctionLike {
     return this.parameters.get(name);
   }
 
-  public addParameter(name: string, defaultValue: PropertyValue): Parameter {
+  public addParameter(
+    name: string,
+    defaultValue: PropertyValue = undefined
+  ): Parameter {
     const param = new Parameter(name);
 
     if (defaultValue !== undefined) {

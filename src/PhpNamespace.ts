@@ -12,10 +12,6 @@ export enum NamespaceType {
 }
 
 export class PhpNamespace {
-  public static readonly NameNormal = 'n';
-  public static readonly NameFunction = 'f';
-  public static readonly NameConstant = 'c';
-
   private name: string;
   private bracketedSyntax: boolean = false;
   private aliases: Record<string, Record<string, string>> = {
@@ -117,11 +113,27 @@ export class PhpNamespace {
     return this.addUse(name, alias, NamespaceType.Constant);
   }
 
-  public getUses(of: string = NamespaceType.Normal): string[] {
-    const sortedAliases = Object.entries(this.aliases[of]).sort(([a], [b]) =>
-      a.localeCompare(b)
+  public getUses(of: string = NamespaceType.Normal): Record<string, string> {
+    const aliases = this.aliases[of];
+
+    // Sort the aliases based on the transformed string
+    const sortedAliases = Object.entries(aliases).sort(
+      ([aliasA, nameA], [aliasB, nameB]) => {
+        const transformedA = nameA.replace(/\\/g, ' ');
+        const transformedB = nameB.replace(/\\/g, ' ');
+        return transformedA.localeCompare(transformedB);
+      }
     );
-    return sortedAliases.map(([alias, name]) => name);
+
+    // Filter the aliases
+    const filteredAliases = sortedAliases.filter(([alias, name]) => {
+      const fullAlias = (this.name ? this.name + '\\' : '') + alias;
+      return (
+        fullAlias.localeCompare(name, undefined, { sensitivity: 'base' }) !== 0
+      );
+    });
+
+    return Object.fromEntries(filteredAliases);
   }
 
   public resolveName(name: string, of: string = NamespaceType.Normal): string {
@@ -166,6 +178,7 @@ export class PhpNamespace {
           return alias;
         }
       }
+
       return (
         this.simplifyName(Helpers.extractNamespace(name) + '\\') +
         Helpers.extractShortName(name)
@@ -173,16 +186,17 @@ export class PhpNamespace {
     }
 
     let shortest: string | null = null;
-    const relative = name.startsWith(this.name + '\\')
+    let relative = name.startsWith(this.name + '\\')
       ? name.substring(this.name.length + 1)
       : null;
 
     for (const alias in this.aliases[of]) {
       const original = this.aliases[of][alias];
-      if (relative && relative.startsWith(alias + '\\')) {
-        return relative;
+      if (relative && (relative + '\\').startsWith(alias + '\\')) {
+        relative = null;
       }
-      if (name.startsWith(original + '\\')) {
+
+      if ((name + '\\').startsWith(original + '\\')) {
         const short = alias + name.substring(original.length);
         if (!shortest || shortest.length > short.length) {
           shortest = short;
@@ -190,7 +204,11 @@ export class PhpNamespace {
       }
     }
 
-    return relative || shortest || (this.name ? '\\' : '') + name;
+    if (shortest && relative && shortest.length < relative.length) {
+      return shortest;
+    }
+
+    return relative ?? shortest ?? (this.name ? '\\' : '') + name;
   }
 
   public add(

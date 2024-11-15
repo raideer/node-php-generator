@@ -1,5 +1,5 @@
 import { HasComment } from './Api/HasComment';
-import { PhpNamespace } from './PhpNamespace';
+import { NamespaceType, PhpNamespace } from './PhpNamespace';
 import { ClassType } from './ClassType';
 import { InterfaceType } from './InterfaceType';
 import { TraitType } from './TraitType';
@@ -43,10 +43,12 @@ export class PhpFile implements HasComment {
   }
 
   public addNamespace(namespace: string | PhpNamespace): PhpNamespace {
-    const res =
+    const ns =
       namespace instanceof PhpNamespace
-        ? (this.namespaces.set(namespace.getName(), namespace), namespace)
-        : (this.namespaces.get(namespace) ?? new PhpNamespace(namespace));
+        ? namespace
+        : new PhpNamespace(namespace);
+
+    this.namespaces.set(ns.getName(), ns);
 
     this.namespaces.forEach((ns) => {
       ns.setBracketedSyntax(
@@ -54,7 +56,7 @@ export class PhpFile implements HasComment {
       );
     });
 
-    return res;
+    return ns;
   }
 
   public removeNamespace(namespace: string | PhpNamespace): this {
@@ -93,7 +95,7 @@ export class PhpFile implements HasComment {
   public addUse(
     name: string,
     alias: string | null = null,
-    of: string = PhpNamespace.NameNormal
+    of: NamespaceType = NamespaceType.Normal
   ): this {
     this.addNamespace('').addUse(name, alias, of);
     return this;

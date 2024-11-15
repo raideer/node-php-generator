@@ -5,7 +5,7 @@ import { InterfaceType } from './InterfaceType';
 import { ClassType } from './ClassType';
 import { TraitType } from './TraitType';
 import { EnumType } from './EnumType';
-import { PhpNamespace } from './PhpNamespace';
+import { NamespaceType, PhpNamespace } from './PhpNamespace';
 import { PhpFile } from './PhpFile';
 import { Dumper } from './Dumper';
 import { Helpers } from './Helpers';
@@ -187,6 +187,7 @@ export class Printer {
       .getConstants()
       .map((constant) => this.printConstant(constant))
       .join('');
+
     const methods = classType
       .getMethods()
       .map((method) => {
@@ -208,7 +209,7 @@ export class Printer {
 
         return this.printMethod(method, namespace, classType.isInterface());
       })
-      .join('');
+      .join('\n');
     const properties =
       classType instanceof ClassType || classType instanceof TraitType
         ? classType
@@ -291,8 +292,8 @@ export class Printer {
     const name = namespace.getName();
     const uses = [
       this.printUses(namespace),
-      this.printUses(namespace, PhpNamespace.NameFunction),
-      this.printUses(namespace, PhpNamespace.NameConstant),
+      this.printUses(namespace, NamespaceType.Function),
+      this.printUses(namespace, NamespaceType.Constant),
     ]
       .filter(Boolean)
       .join('\n'.repeat(this.linesBetweenUseTypes));
@@ -338,12 +339,12 @@ export class Printer {
 
   protected printUses(
     namespace: PhpNamespace,
-    of: string = PhpNamespace.NameNormal
+    of: NamespaceType = NamespaceType.Normal
   ): string {
     const prefix = {
-      [PhpNamespace.NameNormal]: '',
-      [PhpNamespace.NameFunction]: 'function ',
-      [PhpNamespace.NameConstant]: 'const ',
+      [NamespaceType.Normal]: '',
+      [NamespaceType.Function]: 'function ',
+      [NamespaceType.Constant]: 'const ',
     }[of];
     return Object.entries(namespace.getUses(of))
       .map(([alias, original]) => {
@@ -419,12 +420,13 @@ export class Printer {
   }
 
   private printConstant(constant: Constant): string {
+    const type = this.printType(constant.getType(), false);
+
     const def =
       (constant.isFinal() ? 'final ' : '') +
       (constant.getVisibility() ? constant.getVisibility() + ' ' : '') +
       'const ' +
-      this.printType(constant.getType(), false) +
-      ' ' +
+      (type ? type + ' ' : '') +
       constant.getName() +
       ' = ';
 
