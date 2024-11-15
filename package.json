@@ -1,7 +1,7 @@
 {
   "name": "php-generator",
   "version": "1.0.0",
-  "description": "",
+  "description": "PHP Generator in Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
