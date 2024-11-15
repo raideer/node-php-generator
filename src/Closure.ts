@@ -1,23 +1,36 @@
-import { asFunction } from "./mixins/asFunction";
-import { withAttributes } from "./mixins/withAttributes";
-import { Parameter } from "./Parameter";
+import { HasAttributes } from './Api/HasAttributes';
+import { Attribute, AttributeArguments } from './Attribute';
+import { FunctionLike } from './FunctionLike';
+import { Parameter } from './Parameter';
 
-export class Closure extends asFunction(withAttributes(class {})) {
+export class Closure extends FunctionLike implements HasAttributes {
+  private attributes: Attribute[] = [];
   private uses: Parameter[] = [];
 
-  getUses(): Parameter[] {
+  public getAttributes(): Attribute[] {
+    return this.attributes;
+  }
+
+  public addAttribute(name: string, args: AttributeArguments = {}): this {
+    this.attributes.push(new Attribute(name, args));
+    return this;
+  }
+
+  public setAttributes(attributes: Attribute[]): this {
+    this.attributes = attributes;
+    return this;
+  }
+
+  public setUses(uses: Parameter[]): this {
+    this.uses = uses;
+    return this;
+  }
+
+  public getUses(): Parameter[] {
     return this.uses;
   }
 
-  setUses(uses: Parameter[]): this {
-    this.uses = uses;
-
-    return this;
-  }
-
-  addUse(name: string): this {
-    this.uses.push((new Parameter()).setName(name));
-
-    return this;
+  public clone(): this {
+    return structuredClone(this);
   }
 }

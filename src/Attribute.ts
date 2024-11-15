@@ -1,17 +1,20 @@
+export type AttributeArgument = string | number | boolean | null;
+export type AttributeArguments = Record<string, AttributeArgument>;
+
 export class Attribute {
   private name: string;
-  private args: any[];
+  private args: AttributeArguments;
 
-  constructor(name: string, args: any[]) {
+  constructor(name: string, args: AttributeArguments = {}) {
     this.name = name;
     this.args = args;
   }
 
-  getName(): string {
+  public getName(): string {
     return this.name;
   }
 
-  getArguments(): any[] {
+  public getArguments(): AttributeArguments {
     return this.args;
   }
 }

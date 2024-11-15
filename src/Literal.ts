@@ -1,9 +1,7 @@
 export class Literal {
-  private value: string;
-  private args: any[] = [];
+  constructor(private value: string) {}
 
-  constructor(value: string, args: any[] = []) {
-    this.value = value;
-    this.args = args;
+  public toString(): string {
+    return this.value;
   }
 }

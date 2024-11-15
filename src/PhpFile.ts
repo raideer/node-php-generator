@@ -1,72 +1,129 @@
-import { ClassType } from "./ClassType";
-import { EnumType } from "./EnumType";
-import { FunctionType } from "./FunctionType";
-import { InterfaceType } from "./InterfaceType";
-import { TraitType } from "./TraitType";
-import { withComments } from "./mixins/withComments";
-import { PhpNamespace, PhpNamespaceType } from "./PhpNamespace";
-import { extractNamespace, extractShortName } from "./utils";
+import { HasComment } from './Api/HasComment';
+import { PhpNamespace } from './PhpNamespace';
+import { ClassType } from './ClassType';
+import { InterfaceType } from './InterfaceType';
+import { TraitType } from './TraitType';
+import { EnumType } from './EnumType';
+import { GlobalFunction } from './GlobalFunction';
+import { Helpers } from './Helpers';
 
-export class PhpFile extends withComments(class {}) {
-  private namespaces: PhpNamespace[] = [];
-  private strictTypes = false;
+export class PhpFile implements HasComment {
+  private comment: string | undefined;
+  private namespaces: Map<string, PhpNamespace> = new Map();
+  private strictTypes: boolean = false;
 
-  addClass(name: string): ClassType {
-    return this.addNamespace(extractNamespace(name))
-      .addClass(extractShortName(name));
+  public addClass(name: string): ClassType {
+    return this.addNamespace(Helpers.extractNamespace(name)).addClass(
+      Helpers.extractShortName(name)
+    );
   }
 
-  addInterface(name: string): InterfaceType {
-    return this.addNamespace(extractNamespace(name))
-      .addInterface(extractShortName(name));
+  public addInterface(name: string): InterfaceType {
+    return this.addNamespace(Helpers.extractNamespace(name)).addInterface(
+      Helpers.extractShortName(name)
+    );
   }
 
-  addTrait(name: string): TraitType {
-    return this.addNamespace(extractNamespace(name))
-      .addTrait(extractShortName(name));
+  public addTrait(name: string): TraitType {
+    return this.addNamespace(Helpers.extractNamespace(name)).addTrait(
+      Helpers.extractShortName(name)
+    );
   }
 
-  addEnum(name: string): EnumType {
-    return this.addNamespace(extractNamespace(name))
-      .addEnum(extractShortName(name));
+  public addEnum(name: string): EnumType {
+    return this.addNamespace(Helpers.extractNamespace(name)).addEnum(
+      Helpers.extractShortName(name)
+    );
   }
 
-  addFunction(name: string): FunctionType {
-    return this.addNamespace(extractNamespace(name))
-      .addFunction(extractShortName(name));
+  public addFunction(name: string): GlobalFunction {
+    return this.addNamespace(Helpers.extractNamespace(name)).addFunction(
+      Helpers.extractShortName(name)
+    );
   }
 
-  addNamespace(namespace: PhpNamespace | string): PhpNamespace {
-    const namespaceName = typeof namespace === "string" ? namespace : namespace.getName();
-    
-    const existingNamespace = this.namespaces.find((ns) => ns.getName() === namespaceName);
+  public addNamespace(namespace: string | PhpNamespace): PhpNamespace {
+    const res =
+      namespace instanceof PhpNamespace
+        ? (this.namespaces.set(namespace.getName(), namespace), namespace)
+        : (this.namespaces.get(namespace) ?? new PhpNamespace(namespace));
+
+    this.namespaces.forEach((ns) => {
+      ns.setBracketedSyntax(
+        this.namespaces.size > 1 && this.namespaces.has('')
+      );
+    });
+
+    return res;
   }
 
-  getNamespaces(): PhpNamespace[] {
-    return this.namespaces;
-  }
-
-  getClasses(): ClassType[] {
-    return this.namespaces.flatMap((ns) => ns.getClasses());
-  }
-
-  getFunctions(): FunctionType[] {
-    return this.namespaces.flatMap((ns) => ns.getFunctions());
-  }
-
-  addUse(name: string, alias: string | null = null, of: PhpNamespaceType = PhpNamespaceType.NORMAL): this {
-    this.addNamespace('')->addUse(name, alias, of);
-
+  public removeNamespace(namespace: string | PhpNamespace): this {
+    const name =
+      namespace instanceof PhpNamespace ? namespace.getName() : namespace;
+    this.namespaces.delete(name);
     return this;
   }
 
-  setStrictTypes(strictTypes: boolean = true): this {
-    this.strictTypes = strictTypes;
+  public getNamespaces(): PhpNamespace[] {
+    return Array.from(this.namespaces.values());
+  }
 
+  public getClasses(): (ClassType | InterfaceType | TraitType | EnumType)[] {
+    const classes: (ClassType | InterfaceType | TraitType | EnumType)[] = [];
+    this.namespaces.forEach((namespace, n) => {
+      const prefix = n ? `${n}\\` : '';
+      namespace.getClasses().forEach((classType, c) => {
+        classes.push(classType);
+      });
+    });
+    return classes;
+  }
+
+  public getFunctions(): GlobalFunction[] {
+    const functions: GlobalFunction[] = [];
+    this.namespaces.forEach((namespace, n) => {
+      const prefix = n ? `${n}\\` : '';
+      namespace.getFunctions().forEach((func, f) => {
+        functions.push(func);
+      });
+    });
+    return functions;
+  }
+
+  public addUse(
+    name: string,
+    alias: string | null = null,
+    of: string = PhpNamespace.NameNormal
+  ): this {
+    this.addNamespace('').addUse(name, alias, of);
     return this;
   }
 
-  hasStrictTypes(): boolean {
+  public setStrictTypes(state: boolean = true): this {
+    this.strictTypes = state;
+    return this;
+  }
+
+  public hasStrictTypes(): boolean {
     return this.strictTypes;
+  }
+
+  getComment(): string | undefined {
+    return this.comment;
+  }
+
+  setComment(comment: string | undefined): this {
+    this.comment = comment;
+    return this;
+  }
+
+  addComment(comment: string): this {
+    this.comment = (this.comment ? this.comment + '\n' : '') + comment;
+    return this;
+  }
+
+  removeComment(): this {
+    this.comment = undefined;
+    return this;
   }
 }
