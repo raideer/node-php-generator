@@ -1,5 +1,6 @@
 {
   "name": "php-generator",
+  "author": "raideer",
   "version": "1.0.0",
   "description": "PHP Generator in Node.js",
   "main": "dist/index.js",
@@ -11,8 +12,7 @@
     "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0-only",
   "devDependencies": {
     "@eslint/js": "^9.15.0",
     "@types/jest": "^29.5.14",
