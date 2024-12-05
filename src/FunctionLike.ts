@@ -1,7 +1,7 @@
 import { Parameter } from './Parameter';
 import { PropertyValue } from './types';
 
-export class FunctionLike {
+export abstract class FunctionLike {
   protected body: string = '';
   protected parameters: Map<string, Parameter> = new Map();
 

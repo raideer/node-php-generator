@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`prints function 1`] = `
+"function fooBar()
+{
+}
+"
+`;
+
+exports[`prints function with attributes (with arguments) 1`] = `
+"#[Foo\\Cached(mode: true)]
+function fooBar()
+{
+}
+"
+`;
+
+exports[`prints function with attributes 1`] = `
+"#[foo]
+function fooBar()
+{
+}
+"
+`;
+
+exports[`prints function with doc comment 1`] = `
+"/**
+ * This is a doc comment
+ * 
+ * @return void
+ */
+function fooBar()
+{
+}
+"
+`;
+
+exports[`prints function with parameters (type & nullable) 1`] = `
+"function fooBar(?string $foo = 'bar')
+{
+}
+"
+`;
+
+exports[`prints function with parameters 1`] = `
+"function fooBar($foo = 'bar')
+{
+}
+"
+`;
+
+exports[`prints function with return type 1`] = `
+"function fooBar(): void
+{
+}
+"
+`;

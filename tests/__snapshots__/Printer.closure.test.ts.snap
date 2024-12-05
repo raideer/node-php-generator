@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`prints basic closure 1`] = `
+"function () {
+}"
+`;
+
+exports[`prints closure with attributes 1`] = `
+"#[SomeAttribute] function () {
+}"
+`;
+
+exports[`prints closure with attributes and arguments 1`] = `
+"#[SomeAttribute(key: 'value')] function () {
+}"
+`;
+
+exports[`prints closure with multiple use variables on multiple lines 1`] = `
+"function () use (
+    $longVariableName1,
+    $longVariableName2,
+    $longVariableName3,
+) {
+}"
+`;
+
+exports[`prints closure with parameters 1`] = `
+"function ($foo = 'bar') {
+}"
+`;
+
+exports[`prints closure with reference use variables 1`] = `
+"function () use (&$bar) {
+}"
+`;
+
+exports[`prints closure with return reference 1`] = `
+"function &() {
+}"
+`;
+
+exports[`prints closure with return type 1`] = `
+"function (): string {
+}"
+`;
+
+exports[`prints closure with use variables 1`] = `
+"function () use ($bar) {
+}"
+`;
+
+exports[`prints complex closure 1`] = `
+"#[SomeAttribute(key: 'value')] function (?string $param) use (&$useVar): int {
+}"
+`;

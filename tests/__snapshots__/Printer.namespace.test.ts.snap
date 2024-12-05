@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`prints complex namespace 1`] = `
+"namespace App\\Entity {
+    use App\\BaseEntity;
+    use App\\Interfaces\\EntityInterface;
+    use App\\Repository\\UserRepository;
+    use App\\Traits\\TimestampableTrait;
+    use Doctrine\\ORM\\Mapping as ORM;
+
+    class User extends BaseEntity implements EntityInterface
+    {
+        use TimestampableTrait;
+    }
+}
+"
+`;
+
+exports[`prints empty namespace 1`] = `
+"namespace App;
+
+"
+`;
+
+exports[`prints namespace with aliased use statements 1`] = `
+"namespace App;
+
+use Foo\\Bar\\Baz as CustomBaz;
+use Foo\\Bar\\Qux as CustomQux;
+
+"
+`;
+
+exports[`prints namespace with bracketed syntax 1`] = `
+"namespace App {
+    class User
+    {
+    }
+}
+"
+`;
+
+exports[`prints namespace with class 1`] = `
+"namespace App;
+
+class User extends \\BaseEntity
+{
+}
+"
+`;
+
+exports[`prints namespace with multiple classes 1`] = `
+"namespace App\\Entity;
+
+class User
+{
+}
+
+class Post
+{
+}
+"
+`;
+
+exports[`prints namespace with use statements 1`] = `
+"namespace App\\Entity;
+
+use App\\Interfaces\\UserInterface;
+use App\\Traits\\TimestampableTrait;
+use Doctrine\\ORM\\Mapping as ORM;
+
+"
+`;

@@ -1,3 +1,4 @@
+import { AttributeArguments } from './Attribute';
 import { Helpers } from './Helpers';
 import { Literal } from './Literal';
 
@@ -161,6 +162,7 @@ export class Dumper {
     let res = '';
     for (let n = 0; n < tokens.length; n++) {
       const token = tokens[n];
+
       if (n % 2 === 0) {
         res += token;
       } else if (token === '\\?') {
@@ -171,9 +173,7 @@ export class Dumper {
         res += this.dump(args.shift(), res.length - res.lastIndexOf('\n'));
       } else if (token === '...?' || token === '...?:' || token === '?*') {
         const arg = args.shift();
-        if (!Array.isArray(arg)) {
-          throw new Error('Argument must be an array.');
-        }
+
         res += this.dumpArguments(
           arg,
           res.length - res.lastIndexOf('\n'),
@@ -196,14 +196,19 @@ export class Dumper {
     return res;
   }
 
-  private dumpArguments(args: any[], column: number, named: boolean): string {
-    const pairs = args.map((v, k) => {
-      const name = named && !Number.isInteger(k) ? k + ': ' : '';
+  private dumpArguments(
+    args: AttributeArguments,
+    column: number,
+    named: boolean
+  ): string {
+    const pairs = Object.entries(args).map(([k, v]) => {
+      const name = named && !Number.isInteger(Number(k)) ? k + ': ' : '';
       return name + this.dumpVar(v, [args], 0, column + name.length + 1);
     });
 
     const line = pairs.join(', ');
-    return args.length < 2 ||
+
+    return Object.keys(args).length < 2 ||
       (!line.includes('\n') && column + line.length <= this.wrapLength)
       ? line
       : '\n' + this.indentation + pairs.join(',\n' + this.indentation) + ',\n';

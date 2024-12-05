@@ -13,6 +13,7 @@ import { Attribute } from './Attribute';
 import { PromotedParameter } from './PromotedParameter';
 import { Constant } from './Constant';
 import { Property } from './Property';
+import { Parameter } from './Parameter';
 
 export class Printer {
   public wrapLength: number = 120;
@@ -111,8 +112,12 @@ export class Printer {
       line.length + returnType.length + this.indentation.length + 2
     );
     let body = Helpers.simplifyTaggedNames(method.getBody(), this.namespace);
-    body = Helpers.normalize(body).trimStart();
-    body = body.trimEnd() + '\n';
+
+    if (body.length > 0) {
+      body = Helpers.normalize(body).trimStart();
+      body = body.trimEnd() + '\n';
+    }
+
     const braceOnNextLine = this.isBraceOnNextLine(
       params.includes('\n'),
       !!returnType
@@ -386,37 +391,70 @@ export class Printer {
   ): string {
     const params = func.getParameters();
 
-    const res = params
-      .map((param) => {
-        const variadic =
-          func.isVariadic() && param === params[params.length - 1];
-        const attrs = this.printAttributes(param.getAttributes(), true);
-
-        return (
-          this.printDocComment(param) +
-          (attrs ? (multiline ? attrs.slice(0, -1) + '\n' : attrs) : '') +
-          (param instanceof PromotedParameter
-            ? (param.getVisibility() || 'public') +
-              (param.isReadOnly() && param.getType() ? ' readonly' : '') +
-              ''
-            : '') +
-          this.printType(param.getType(), param.isNullable()) +
-          ' ' +
-          (param.isReference() ? '&' : '') +
-          (variadic ? '...' : '') +
-          '$' +
-          param.getName() +
-          (param.getDefaultValue() && !variadic
-            ? ' = ' + this.dump(param.getDefaultValue())
-            : '') +
-          (multiline ? ',\n' : ', ')
-        );
-      })
+    const formattedParams = params
+      .map((param) => this.formatParameter(param, func, multiline))
       .join('');
 
     return multiline
-      ? '(\n' + this.indent(res) + ')'
-      : '(' + res.slice(0, -2) + ')';
+      ? '(\n' + this.indent(formattedParams) + ')'
+      : '(' + formattedParams.slice(0, -2) + ')';
+  }
+
+  private formatParameter(
+    param: Parameter,
+    func: GlobalFunction | Method | Closure,
+    multiline: boolean
+  ): string {
+    const variadic = this.isVariadicParameter(param, func);
+    const attrs = this.printAttributes(param.getAttributes(), true);
+    const docComment = this.printDocComment(param);
+    const visibility = this.getParameterVisibility(param);
+    const type = this.printType(param.getType(), param.isNullable());
+    const reference = param.isReference() ? '&' : '';
+    const variadicSymbol = variadic ? '...' : '';
+    const defaultValue = this.getParameterDefaultValue(param, variadic);
+
+    return (
+      docComment +
+      (attrs ? (multiline ? attrs.slice(0, -1) + '\n' : attrs) : '') +
+      visibility +
+      type +
+      (type ? ' ' : '') +
+      reference +
+      variadicSymbol +
+      '$' +
+      param.getName() +
+      defaultValue +
+      (multiline ? ',\n' : ', ')
+    );
+  }
+
+  private isVariadicParameter(
+    param: Parameter,
+    func: GlobalFunction | Method | Closure
+  ): boolean {
+    const params = func.getParameters();
+    return func.isVariadic() && param === params[params.length - 1];
+  }
+
+  private getParameterVisibility(param: Parameter): string {
+    if (param instanceof PromotedParameter) {
+      return (
+        (param.getVisibility() || 'public') +
+        (param.isReadOnly() && param.getType() ? ' readonly' : '') +
+        ' '
+      );
+    }
+    return '';
+  }
+
+  private getParameterDefaultValue(
+    param: Parameter,
+    variadic: boolean
+  ): string {
+    return param.getDefaultValue() && !variadic
+      ? ' = ' + this.dump(param.getDefaultValue())
+      : '';
   }
 
   private printConstant(constant: Constant): string {
@@ -451,7 +489,7 @@ export class Printer {
       (!readOnlyClass && property.isReadOnly() && type ? ' readonly' : '') +
       ' ' +
       this.printType(type, property.isNullable()) +
-      ' ' +
+      (type ? ' ' : '') +
       '$' +
       property.getName();
 

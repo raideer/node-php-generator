@@ -1,0 +1,140 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`prints abstract method 1`] = `
+"abstract function foo();
+"
+`;
+
+exports[`prints basic method 1`] = `
+"function foo()
+{
+}
+"
+`;
+
+exports[`prints complex method 1`] = `
+"/**
+ * Complex method with multiple features
+ * @param string $param1 First parameter
+ * @param int $param2 Second parameter
+ * @return array<string>
+ */
+#[Route(path: '/complex')]
+public static function complexMethod(
+    ?string $param1,
+    public readonly int $param2,
+): array
+{
+}
+"
+`;
+
+exports[`prints final method 1`] = `
+"final function foo()
+{
+}
+"
+`;
+
+exports[`prints method in interface context 1`] = `
+"function foo($param): string;
+"
+`;
+
+exports[`prints method with attributes 1`] = `
+"#[Route(path: '/foo')]
+function foo()
+{
+}
+"
+`;
+
+exports[`prints method with doc comment 1`] = `
+"/**
+ * This is a method
+ * @param string $param Description
+ * @return void
+ */
+function foo()
+{
+}
+"
+`;
+
+exports[`prints method with nullable return type 1`] = `
+"function foo(): ?string
+{
+}
+"
+`;
+
+exports[`prints method with parameters 1`] = `
+"function foo($param1 = 'default1', $param2 = 'default2')
+{
+}
+"
+`;
+
+exports[`prints method with promoted parameters 1`] = `
+"function foo(
+    public $param = 'default',
+) {
+}
+"
+`;
+
+exports[`prints method with reference parameters 1`] = `
+"function foo(&$param)
+{
+}
+"
+`;
+
+exports[`prints method with reference return 1`] = `
+"function &foo()
+{
+}
+"
+`;
+
+exports[`prints method with return type 1`] = `
+"function foo(): string
+{
+}
+"
+`;
+
+exports[`prints method with typed parameters 1`] = `
+"function foo(?string $param)
+{
+}
+"
+`;
+
+exports[`prints private method 1`] = `
+"private function foo()
+{
+}
+"
+`;
+
+exports[`prints protected method 1`] = `
+"protected function foo()
+{
+}
+"
+`;
+
+exports[`prints public method 1`] = `
+"public function foo()
+{
+}
+"
+`;
+
+exports[`prints static method 1`] = `
+"static function foo()
+{
+}
+"
+`;

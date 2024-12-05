@@ -1,0 +1,157 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`prints abstract class 1`] = `
+"abstract class Foo
+{
+}
+"
+`;
+
+exports[`prints backed enum 1`] = `
+"enum Status: string
+{
+    case PENDING = 'pending';
+    case ACTIVE = 'active';
+}
+"
+`;
+
+exports[`prints basic class 1`] = `
+"class Foo
+{
+}
+"
+`;
+
+exports[`prints class with attributes 1`] = `
+"#[Entity(table: 'foo_table')]
+class Foo
+{
+}
+"
+`;
+
+exports[`prints class with extends 1`] = `
+"class Foo extends BaseClass
+{
+}
+"
+`;
+
+exports[`prints class with implements 1`] = `
+"class Foo implements Interface1, Interface2
+{
+}
+"
+`;
+
+exports[`prints class with methods 1`] = `
+"class Foo
+{
+    public function method1(): string
+    {
+    }
+
+    private function method2($param)
+    {
+    }
+}
+"
+`;
+
+exports[`prints class with namespace resolution 1`] = `
+"class User extends \\BaseEntity implements \\IdentifiableInterface
+{
+}
+"
+`;
+
+exports[`prints class with properties 1`] = `
+"class Foo
+{
+    public string $prop1 = null;
+    private int $prop2 = 42;
+}
+"
+`;
+
+exports[`prints class with traits 1`] = `
+"class Foo
+{
+    use Trait1;
+    use Trait2;
+}
+"
+`;
+
+exports[`prints complex class 1`] = `
+"#[Entity(table: 'complex')]
+#[Cached]
+final readonly class ComplexClass extends BaseClass implements Interface1, Interface2
+{
+    use Trait1;
+
+    public string $prop1 = null;
+    private static $prop2 = [0 => 'a', 1 => 'b', 2 => 'c'];
+
+    public function method1(string $param): array
+    {
+    }
+
+    protected static function method2(): void
+    {
+    }
+}
+"
+`;
+
+exports[`prints enum 1`] = `
+"enum Status
+{
+    case PENDING;
+    case ACTIVE = 1;
+    case INACTIVE = 2;
+}
+"
+`;
+
+exports[`prints final class 1`] = `
+"final class Foo
+{
+}
+"
+`;
+
+exports[`prints interface 1`] = `
+"interface IFoo
+{
+    function doSomething(): void;
+}
+"
+`;
+
+exports[`prints interface with extends 1`] = `
+"interface IFoo extends IBase1, IBase2
+{
+}
+"
+`;
+
+exports[`prints readonly class 1`] = `
+"readonly class Foo
+{
+}
+"
+`;
+
+exports[`prints trait 1`] = `
+"trait MyTrait
+{
+    private $prop = null;
+
+    public function traitMethod()
+    {
+    }
+}
+"
+`;
