@@ -147,10 +147,10 @@ export class Method
     }
   }
 
-  public addPromoterParameter(
+  public addPromotedParameter(
     name: string,
     value: PropertyValue = undefined
-  ): this {
+  ): PromotedParameter {
     const parameter = new PromotedParameter(name);
 
     if (value !== undefined) {
@@ -158,7 +158,7 @@ export class Method
     }
 
     this.parameters.set(name, parameter);
-    return this;
+    return parameter;
   }
 
   public clone(): this {

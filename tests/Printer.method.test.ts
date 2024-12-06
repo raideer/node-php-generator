@@ -118,7 +118,7 @@ test('prints method with typed parameters', () => {
 test('prints method with promoted parameters', () => {
   const printer = new Printer();
   const method = new Method('foo');
-  method.addPromoterParameter('param', 'default');
+  method.addPromotedParameter('param', 'default');
 
   const output = printer.printMethod(method);
 
